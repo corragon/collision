@@ -1,12 +1,26 @@
 <html>
   <head>
-    <title>Canvas tutorial</title>
+    <title>Sideline demo</title>
     <script type="text/javascript">
       function draw(){
-        var canvas = document.getElementById('tutorial');
+        var canvas = document.getElementById('sideline');
         if (canvas.getContext){
-          var ctx = canvas.getContext('2d');
+          var cont = canvas.getContext('2d');
+          line(20, 20, 80, 80);
+          point(85, 85);
         }
+          function line(ax, ay, bx, by) {
+            cont.beginPath();
+            cont.moveTo(ax, ay);
+            cont.lineTo(bx, by);
+            cont.closePath();
+            cont.stroke();
+          }
+          function point(x, y) {
+            cont.beginPath();
+            cont.arc(x, y, 1, 0, 2*Math.PI, true);
+            cont.fill();
+          }
       }
     </script>
     <style type="text/css">
@@ -14,6 +28,6 @@
     </style>
   </head>
   <body onload="draw();">
-    <canvas id="tutorial" width="150" height="150"></canvas>
+    <canvas id="sideline" width="150" height="150"></canvas>
   </body>
 </html>
