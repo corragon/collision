@@ -1,33 +1,79 @@
 <html>
-  <head>
-    <title>Sideline demo</title>
-    <script type="text/javascript">
-      function draw(){
-        var canvas = document.getElementById('sideline');
-        if (canvas.getContext){
-          var cont = canvas.getContext('2d');
-          line(20, 20, 80, 80);
-          point(85, 85);
-        }
-          function line(ax, ay, bx, by) {
-            cont.beginPath();
-            cont.moveTo(ax, ay);
-            cont.lineTo(bx, by);
-            cont.closePath();
-            cont.stroke();
-          }
-          function point(x, y) {
-            cont.beginPath();
-            cont.arc(x, y, 1, 0, 2*Math.PI, true);
-            cont.fill();
-          }
-      }
-    </script>
-    <style type="text/css">
-      canvas { border: 1px solid black; }
-    </style>
-  </head>
-  <body onload="draw();">
-    <canvas id="sideline" width="150" height="150"></canvas>
-  </body>
+    <head>
+        <title>Sideline demo</title>
+        <script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                var s = "#sideline";
+                var canvas = $(s)[0];
+                var point = null;
+                var start = null;
+                var end = null;
+                var ctx = canvas.getContext("2d");
+                var leftRightLeft = $("#lrl");                
+                
+                $(s).click(function(e) {
+                    point = new P(e.pageX-canvas.offsetLeft-1, e.pageY-canvas.offsetTop-1);
+                    leftRightLeft.text(calcRelativePosition());
+                    draw();
+                });
+                
+                $(s).dblclick(function(e) {
+                    if (end) {
+                        start = new P(e.pageX-canvas.offsetLeft-1, e.pageY-canvas.offsetTop-1);
+                        end = null;
+                    }
+                    else {
+                        end = new P(e.pageX-canvas.offsetLeft-1, e.pageY-canvas.offsetTop-1);
+                    }
+                    draw();
+                });
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    if (point) {
+                        drawPoint(point, 1);
+                    }
+                    if (start && end) {
+                        drawLine();
+                    }
+                }
+                function drawLine() {
+                    drawPoint(start, 3);
+                    ctx.beginPath();
+                    ctx.moveTo(start.x, start.y);
+                    ctx.lineTo(end.x, end.y);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+                function drawPoint(p, rad) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, rad, 0, 2*Math.PI, true);
+                    ctx.fill();
+                }
+                function P(xCoordinate, yCoordinate) {
+                    this.x = xCoordinate;
+                    this.y = yCoordinate;
+                }
+                function calcRelativePosition() {
+                    if (! (point && end && start)) return "";
+                    var position = ((end.x - start.x)*(point.y - start.y) - (end.y - start.y)*(point.x - start.x));
+                    if (position > 0) {
+                        return "Right";
+                    }
+                    if (position == 0) {
+                        return "Colinear";
+                    }
+                    return "Left";
+                }
+            });
+
+        </script>
+        <style type="text/css">
+            canvas { border: 1px solid black; }
+        </style>
+    </head>
+    <body>
+        <canvas id="sideline" width="150" height="150"></canvas>
+        <div id="lrl"></div>
+    </body>
 </html>
