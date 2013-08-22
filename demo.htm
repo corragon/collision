@@ -6,7 +6,7 @@
             $(function () {
                 var s = "#sideline";
                 var canvas = $(s)[0];
-                var point,start,end, mouseDownPoint = null;
+                var point,start,end, touchPoint = null;
                 var ctx = canvas.getContext("2d");
                 var leftRightLeft = $("#lrl");     
                 var startStats = $("#start");     
@@ -14,21 +14,24 @@
                 var pointStats = $("#point");          
                 
                 $(s).mousedown(function(e) {
-                    mouseDownPoint = new P(e.pageX-canvas.offsetLeft-1, e.pageY-canvas.offsetTop-1);
-                    drawPoint(mouseDownPoint, 3);
+                    touchPoint = new P(e.pageX-canvas.offsetLeft-1, e.pageY-canvas.offsetTop-1);
+                    drawPoint(touchPoint, 3);
                 });
                 $(s).mouseup(function(e) {
                     var upP = new P(e.pageX-canvas.offsetLeft-1, e.pageY-canvas.offsetTop-1);
-                    if (mouseDownPoint.x == upP.x && mouseDownPoint.y == upP.y) {
-                        point = mouseDownPoint;
+                    if (withinTen(touchPoint, upP)) {
+                        point = touchPoint;
                     }
                     else {
-                        start = mouseDownPoint;
+                        start = touchPoint;
                         end = upP;
                     }
                     leftRightLeft.text(areCrossed());
                     draw();
                 });
+                function withinTen(a, b) {
+                    return Math.sqrt(Math.pow((a.x-b.x),2)+Math.pow((a.y-b.y),2)) < 10;
+                }
                 
 /*                $(s).click(function(e) {
                     point = new P(e.pageX-canvas.offsetLeft-1, e.pageY-canvas.offsetTop-1);
