@@ -14,7 +14,7 @@
                 
                 $(s).click(function(e) {
                     point = new P(e.pageX-canvas.offsetLeft-1, e.pageY-canvas.offsetTop-1);
-                    leftRightLeft.text(calcRelativePosition());
+                    leftRightLeft.text(areCrossed());
                     draw();
                 });
                 
@@ -30,18 +30,23 @@
                 });
                 function draw() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    if (point) {
-                        drawPoint(point, 1);
-                    }
-                    if (start && end) {
-                        drawLine();
+                    if (start) {
+                        if (end) {
+                            drawLine(start, end);
+                            if (point) {
+                                drawLine(point, new P(0, point.y));
+                            }
+                        }
+                        else {
+                            drawPoint(start, 2);
+                        }
                     }
                 }
-                function drawLine() {
-                    drawPoint(start, 3);
+                function drawLine(startP, endP) {
+                    drawPoint(startP, 3);
                     ctx.beginPath();
-                    ctx.moveTo(start.x, start.y);
-                    ctx.lineTo(end.x, end.y);
+                    ctx.moveTo(startP.x, startP.y);
+                    ctx.lineTo(endP.x, endP.y);
                     ctx.closePath();
                     ctx.stroke();
                 }
@@ -54,9 +59,9 @@
                     this.x = xCoordinate;
                     this.y = yCoordinate;
                 }
-                function calcRelativePosition() {
-                    if (! (point && end && start)) return "";
-                    var position = ((end.x - start.x)*(point.y - start.y) - (end.y - start.y)*(point.x - start.x));
+                function calcRelativePosition(testP, endP1, endP2) {
+                    if (! (testP && endP1 && endP2)) return "";
+                    var position = ((endP2.x - endP1.x)*(testP.y - endP1.y) - (endP2.y - endP1.y)*(testP.x - endP1.x));
                     if (position > 0) {
                         return "Right";
                     }
@@ -64,6 +69,27 @@
                         return "Colinear";
                     }
                     return "Left";
+                }
+                function isRight(testP, endP1, endP2) {
+                    if (! (testP && endP1 && endP2)) return "";
+                    var position = ((endP2.x - endP1.x)*(testP.y - endP1.y) - (endP2.y - endP1.y)*(testP.x - endP1.x));
+                    if (position >= 0) {
+                        return true;
+                    }
+                    return false;
+                }
+                function areCrossed() {
+                    if (! (point && end && start)) return "Need 3 points";
+                    var tether = new P(0, point.y);
+                    var posPoint = isRight(point, start, end);
+                    var posTether = isRight(tether, start, end);
+                    
+                    var posStart = isRight(start, point, tether);
+                    var posEnd = isRight(end, point, tether);
+                    if ((posPoint != posTether) && (posStart != posEnd)) {
+                        return true;
+                    }
+                    return false;
                 }
             });
 
