@@ -10,7 +10,10 @@
                 var start = null;
                 var end = null;
                 var ctx = canvas.getContext("2d");
-                var leftRightLeft = $("#lrl");                
+                var leftRightLeft = $("#lrl");     
+                var startStats = $("#start");     
+                var endStats = $("#end");     
+                var pointStats = $("#point");          
                 
                 $(s).click(function(e) {
                     point = new P(e.pageX-canvas.offsetLeft-1, e.pageY-canvas.offsetTop-1);
@@ -31,9 +34,12 @@
                 function draw() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     if (start) {
+                        startStats.text("Start: "+start.toString());
                         if (end) {
+                            endStats.text("End: "+end.toString());
                             drawLine(start, end);
                             if (point) {
+                                pointStats.text("Point: "+point.toString());
                                 drawLine(point, new P(0, point.y));
                             }
                         }
@@ -58,6 +64,13 @@
                 function P(xCoordinate, yCoordinate) {
                     this.x = xCoordinate;
                     this.y = yCoordinate;
+                    return {
+                        x: xCoordinate,
+                        y: yCoordinate,
+                        toString: function() {
+                            return "x: "+xCoordinate+" y: "+yCoordinate;
+                        }
+                    }
                 }
                 function calcRelativePosition(testP, endP1, endP2) {
                     if (! (testP && endP1 && endP2)) return "";
@@ -73,7 +86,7 @@
                 function isRight(testP, endP1, endP2) {
                     if (! (testP && endP1 && endP2)) return "";
                     var position = ((endP2.x - endP1.x)*(testP.y - endP1.y) - (endP2.y - endP1.y)*(testP.x - endP1.x));
-                    if (position >= 0) {
+                    if (position > 0) {
                         return true;
                     }
                     return false;
@@ -101,5 +114,10 @@
     <body>
         <canvas id="sideline" width="150" height="150"></canvas>
         <div id="lrl"></div>
+        <div id="stats">
+            <div id="start"></div>
+            <div id="end"></div>
+            <div id="point"></div>
+        </div>
     </body>
 </html>
